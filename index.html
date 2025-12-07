@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Style Assistant - Interactive UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Global Reset and Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header and Navigation */
+        .header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #5d4a67;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            margin-left: 25px;
+            font-weight: 500;
+            transition: color 0.3s, border-bottom 0.3s;
+            padding-bottom: 5px;
+        }
+
+        .nav-links a:hover {
+            color: #8c78a0;
+        }
+        
+        /* Active Navigation Link Styling */
+        .nav-links .active-nav {
+            color: #5d4a67;
+            font-weight: 600;
+            border-bottom: 3px solid #f992e4;
+        }
+
+        /* Content Visibility Classes */
+        .page-content-section {
+            padding: 30px 0;
+        }
+
+        .hidden-screen {
+            display: none;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #5d4a67;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* Dashboard Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 2fr 3fr;
+            }
+        }
+        
+        /* My Closet Grid Styles */
+        .closet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .item-card-image {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .item-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Marketplace Specific Styles */
+        .marketplace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        /* Profile Specific Styles */
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        @media (min-width: 700px) {
+            .profile-layout {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+        
+        .profile-info {
+            background-color: #f1eef3;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .profile-info img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 4px solid #f992e4;
+        }
+        
+        .profile-details p {
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 5px;
+            text-align: left;
+        }
+
+        .profile-details strong {
+            display: inline-block;
+            width: 120px;
+            font-weight: 600;
+            color: #5d4a67;
+        }
+
+        .btn-logout {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .btn-logout:hover {
+            background-color: #d32f2f;
+        }
+        
+        .btn-update-profile {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        .btn-update-profile:hover {
+            background-color: #388E3C;
+        }
+
+        /* Styles carried over from previous steps for completeness */
+        .ai-suggestion { text-align: center; }
+        .suggestion-image { max-width: 80%; max-height: 250px; height: auto; width: auto; border-radius: 6px; object-fit: contain; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); }
+        .outfit-display { background-color: #f1eef3; border-radius: 8px; padding: 20px; margin-bottom: 20px; min-height: 350px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; text-align: center; }
+        .outfit-buttons button { padding: 10px 20px; margin: 0 10px; border: none; border-radius: 25px; cursor: pointer; font-weight: 600; transition: transform 0.2s; }
+        .btn-accept { background-color: #4CAF50; color: white; }
+        .btn-reject { background-color: #f44336; color: white; }
+        .summary-details { display: flex; flex-direction: column; align-items: center; padding: 40px 0; font-size: 1.1em; }
+        .summary-details strong { font-size: 2.5em; color: #f992e4; display: block; margin-bottom: 10px; }
+        .btn-add-item { background-color: #f992e4; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background-color 0.3s; }
+        .closet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .product-card { background-color: #fdfdfd; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); overflow: hidden; text-align: center; }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid #eee; }
+        .btn-add-to-cart { background-color: #f992e4; color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; transition: background-color 0.3s; }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav container">
+            <div class="logo">Style.AI</div>
+            <nav class="nav-links">
+                <a href="#dashboard-screen" class="nav-link" id="dashboard-link">Dashboard</a>
+                <a href="#closet-screen" class="nav-link" id="closet-link">My Closet</a>
+                <a href="#marketplace-screen" class="nav-link" id="marketplace-link">Marketplace</a>
+                <a href="#profile-screen" class="nav-link" id="profile-link">Profile</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="dashboard-screen" class="page-content-section dashboard-grid">
+            
+            <section class="ai-suggestion card">
+                <h2>AI Outfit Suggestion ✨</h2>
+                <div class="outfit-display">
+                    <img src="Sugestion.jpg" alt="AI Suggested Outfit" class="suggestion-image">
+                    <p>The AI Engine suggests a stylish outfit for today based on trends and your item history.</p>
+                    <p>Outfit: Blue Denim Jacket + Black Tee + Khaki Chinos</p>
+                    <button>Customize</button>
+                </div>
+                <div class="outfit-buttons">
+                    <button class="btn-accept">Accept</button>
+                    <button class="btn-reject">Reject</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Inventory Summary 📊</h2>
+                <div class="summary-details">
+                    <strong>54</strong>
+                    <p>Total Items in Closet</p>
+                    <p style="margin-top: 15px;">**Click "My Closet" above for the full inventory**</p>
+                </div>
+                <button onclick="showPage('closet-screen')" class="btn-add-item" style="width: 100%; margin-top: 15px;">+ Add New Item</button>
+            </section>
+        </section>
+
+        <section id="closet-screen" class="page-content-section hidden-screen">
+            <div class="card">
+                <div class="closet-header">
+                    <h2>My Full Closet Inventory 👕👖</h2>
+                    <button class="btn-add-item">+ Add New Item</button>
+                </div>
+                
+                <div class="closet-grid">
+                    <div class="item-card"><div class="item-card-image"><img src="T-shirt.jpeg" alt="Red T-shirt"></div><p>Red Tee</p></div>
+                    <div class="item-card"><div class="item-card-image"><img src="jeans.jpeg" alt="Blue Denim Jeans"></div><p>Blue Denim</p></div>
+                    <div class="item-card"><div class="item-card-image"><img src="shoes.jpeg" alt="White Sneakers"></div><p>White Sneakers</p></div>
+                    <div class="item-card"><div class="item-card-image"><img src="black blazer.jpeg" alt="Black Blazer"></div><p>Black Blazer</p></div>
+                    <div class="item-card"><div class="item-card-image"><img src="summer dress.jpeg" alt="Floral Summer Dress"></div><p>Summer Dress</p></div>
+                    <div class="item-card"><div class="item-card-image"><img src="watch.jpeg" alt="Silver Wrist Watch"></div><p>Silver Watch</p></div>
+                    <div class="item-card"><div class="item-card-image"><img src="Hoodie.jpeg" alt="Gray Hoodie"></div><p>Gray Hoodie</p></div>
+                    <div class="item-card"><div class="item-card-image"><img src="khaki.webp" alt="Khaki Chinos"></div><p>Khaki Chinos</p></div>
+                    <div class="item-card"><div class="item-card-image"><img src="Scarf.webp" alt="Purple Scarf"></div><p>Purple Scarf</p></div>
+                    <div class="item-card"><div class="item-card-image"><img src="Belts.jpg" alt="Leather Belt"></div><p>Leather Belt</p></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="marketplace-screen" class="page-content-section hidden-screen">
+            <div class="card">
+                <div class="closet-header">
+                    <h2>Style Marketplace & Brand Collaborations 🛍️</h2>
+                    <button class="btn-add-item">View Shopping Cart</button>
+                </div>
+
+                <div class="marketplace-grid">
+                    <div class="product-card">
+                        <img src="PufferJacket.webp" alt="Stylish Puffer Jacket">
+                        <div class="product-details">
+                            <h3>Trending Puffer Jacket</h3>
+                            <p>Pairs perfectly with your Black Tee and Denim.</p>
+                            <span class="price">$120.00</span>
+                            <button class="btn-add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <img src="shoes.jpeg" alt="Minimalist Leather Sneakers">
+                        <div class="product-details">
+                            <h3>Minimalist Sneakers (20% OFF)</h3>
+                            <p>Special offer from **Brand X**! Recommended by our AI.</p>
+                            <span class="price">$79.99</span>
+                            <button class="btn-add-to-cart">Apply Offer & Buy</button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card">
+                        <img src="CrossBodyBag.webp" alt="Urban Crossbody Bag">
+                        <div class="product-details">
+                            <h3>Urban Crossbody Bag</h3>
+                            <p>Complete your weekend look with this highly rated accessory.</p>
+                            <span class="price">$45.00</span>
+                            <button class="btn-add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card">
+                        <img src="Knit.webp" alt="Winter Knit Beanie">
+                        <div class="product-details">
+                            <h3>Winter Knit Beanie</h3>
+                            <p>High-quality wool for cold weather styling.</p>
+                            <span class="price">$25.00</span>
+                            <button class="btn-add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="profile-screen" class="page-content-section hidden-screen">
+            <div class="card profile-layout">
+                
+                <div class="profile-info">
+                    <img src="pfp.jpeg" alt="User Avatar"> 
+                    <h3>Lil Ponyo</h3>
+                    <p style="color: #8c78a0;">**UserID:** 007</p>
+                    <p style="font-size: 0.9em; color: #777;">Member Since: 2024-01-15</p>
+                    <button class="btn-logout" onclick="alert('Logging out...')">Log Out</button>
+                </div>
+
+                <div class="profile-details card" style="padding: 20px;">
+                    <h2>Account Details ⚙️</h2>
+                    <p><strong>Name:</strong> Lil Ponyo </p>
+                    <p><strong>Email:</strong> lil.ponyo@example.com</p>
+                    <p><strong>Password:</strong> ******** (<a href="#" onclick="alert('Resetting password via Authentication Service...')">Reset</a>)</p>
+                    <p><strong>Location:</strong> London, UK</p>
+                    <p><strong>Preferred Style:</strong> Casual Chic</p>
+                    
+                    <h2 style="margin-top: 30px;">Preferences</h2>
+                    <p><strong>Notifications:</strong> On</p>
+                    <p><strong>Size Preference:</strong> M / 10</p>
+                    <p><strong>Color Filters:</strong> Neutral, Blue, Pink</p>
+                    
+                    <button class="btn-update-profile">Save Changes</button>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Function to handle page switching
+        function showPage(targetId) {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const contentSections = document.querySelectorAll('.page-content-section');
+
+            // 1. Hide all content sections and remove dashboard-grid class
+            contentSections.forEach(section => {
+                section.classList.add('hidden-screen');
+                section.classList.remove('dashboard-grid');
+            });
+
+            // 2. Remove active class from all links
+            navLinks.forEach(link => {
+                link.classList.remove('active-nav');
+            });
+
+            // 3. Show the selected content
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden-screen');
+                
+                // Add specific layout class for the dashboard
+                if (targetId === 'dashboard-screen') {
+                    targetSection.classList.add('dashboard-grid');
+                }
+            }
+
+            // 4. Add active class to the corresponding link
+            const activeLink = document.querySelector(`.nav-links a[href="#${targetId}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active-nav');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            // Set up event listeners for all navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.getAttribute('href').substring(1);
+                    showPage(targetId);
+                });
+            });
+
+            // Set the initial page to the Dashboard if no hash is present
+            const initialHash = window.location.hash.substring(1) || 'dashboard-screen';
+            showPage(initialHash);
+        });
+    </script>
+</body>
+</html>
